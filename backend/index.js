@@ -13,15 +13,14 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: [
-    'http://localhost:3000',
     'https://linksea.vercel.app',
-    'https://linksea-git-main-dimenzur.vercel.app',
-    'https://linksea-dimenzur.vercel.app'
+    'https://link-sea.onrender.com',
+    'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  maxAge: 86400 // 24 hours
+  maxAge: 86400
 }));
 
 app.use(express.json());
