@@ -38,19 +38,26 @@ export default function Login() {
       
       if (response.success) {
         setIsRedirecting(true);
-        setTimeout(() => {
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        try {
+          router.push('/dashboard');
+        } catch (navError) {
+          console.log('Router navigation failed, trying window.location');
           window.location.href = '/dashboard';
-        }, 1000);
+        }
       } else {
         setError(response.message || 'Login failed');
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'Failed to login. Please try again.');
-    } finally {
-      if (!isRedirecting) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 

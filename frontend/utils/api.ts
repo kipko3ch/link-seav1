@@ -19,18 +19,26 @@ export const loginUser = async (email: string, password: string) => {
       mode: 'cors',
     });
 
+    const data = await response.json();
+    console.log('Login response data:', data);
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
+      throw new Error(data.message || 'Login failed');
     }
 
-    const data = await response.json();
-    
+    // Ensure token is stored if it exists
     if (data.token) {
       localStorage.setItem('token', data.token);
+      // Also store any other necessary user data
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
     }
     
-    return data;
+    return {
+      success: response.ok,
+      ...data
+    };
   } catch (error) {
     console.error('Login error:', error);
     throw error;
