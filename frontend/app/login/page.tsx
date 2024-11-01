@@ -41,9 +41,9 @@ export default function Login() {
         localStorage.setItem('token', response.token);
         localStorage.setItem('username', response.user.username);
         
-        // Use window.location.href with full URL
-        const baseUrl = window.location.origin;
-        window.location.href = `${baseUrl}/dashboard`;
+        // Force a hard redirect
+        console.log('Redirecting to dashboard...');
+        window.location.replace('/dashboard');
       } else {
         throw new Error('Invalid login response');
       }

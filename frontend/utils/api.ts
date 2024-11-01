@@ -27,6 +27,10 @@ export const loginUser = async (email: string, password: string) => {
       throw new Error(data.message || 'Login failed');
     }
 
+    if (!data.token || !data.user) {
+      throw new Error('Invalid response from server');
+    }
+
     return data;
   } catch (error) {
     console.error('Login error:', error);

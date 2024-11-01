@@ -73,15 +73,17 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('Login attempt for:', email); // Debug log
+    console.log('Login attempt for:', email, 'with body:', req.body); // Enhanced logging
 
     // Check if user exists
     const users = await sql`
       SELECT * FROM users WHERE email = ${email}
     `;
 
+    console.log('Found users:', users); // Debug log
+
     if (users.length === 0) {
-      console.log('User not found:', email); // Debug log
+      console.log('User not found:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -89,8 +91,10 @@ const login = async (req, res) => {
 
     // Verify password
     const isValid = await bcrypt.compare(password, user.password_hash);
+    console.log('Password validation:', isValid); // Debug log
+
     if (!isValid) {
-      console.log('Invalid password for:', email); // Debug log
+      console.log('Invalid password for:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
@@ -101,9 +105,12 @@ const login = async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    console.log('Login successful for:', email); // Debug log
+    console.log('Generated token:', token); // Debug log
+    console.log('Login successful for:', email);
 
-    res.json({
+    // Send response with all necessary data
+    const response = {
+      success: true,
       message: 'Login successful',
       token,
       user: {
@@ -111,10 +118,17 @@ const login = async (req, res) => {
         username: user.username,
         email: user.email
       }
-    });
+    };
+
+    console.log('Sending response:', response); // Debug log
+    res.json(response);
   } catch (error) {
-    console.error('Login error:', error); // Debug log
-    res.status(500).json({ message: 'Server error' });
+    console.error('Login error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error',
+      error: error.message 
+    });
   }
 };
 
