@@ -14,8 +14,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: [
     'https://linksea.vercel.app',
-    'http://localhost:3000',
-    'https://link-sea.onrender.com'
+    'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

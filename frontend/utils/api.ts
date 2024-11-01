@@ -2,7 +2,7 @@ import type { CreateLinkData, UpdateLinkData } from '@/types/link';
 import type { CreateThemeData, UpdateThemeData } from '@/types/theme';
 import type { LinkStats } from '@/types/analytics';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://link-sea.onrender.com';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const loginUser = async (email: string, password: string) => {
   try {
@@ -15,6 +15,7 @@ export const loginUser = async (email: string, password: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
+      credentials: 'include'
     });
 
     console.log('Response status:', response.status);
@@ -24,10 +25,6 @@ export const loginUser = async (email: string, password: string) => {
     
     if (!response.ok) {
       throw new Error(data.message || 'Login failed');
-    }
-
-    if (!data.token || !data.user.username) {
-      throw new Error('Invalid login response from server');
     }
 
     return data;
