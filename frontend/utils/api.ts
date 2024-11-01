@@ -15,22 +15,16 @@ export const loginUser = async (email: string, password: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-      cache: 'no-store'
+      credentials: 'include'
     });
 
-    console.log('Response status:', response.status);
-    
-    const data = await response.json();
-    console.log('Login response data:', data);
-    
     if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Login failed');
     }
 
-    if (!data.token || !data.user) {
-      throw new Error('Invalid response from server');
-    }
-
+    const data = await response.json();
+    console.log('Login response:', data);
     return data;
   } catch (error) {
     console.error('Login error:', error);
@@ -63,21 +57,26 @@ export const registerUser = async (username: string, email: string, password: st
 export const createLink = async (linkData: CreateLinkData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/links`, {
+    const response = await fetch(`${API_URL}/api/links`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(linkData),
+      credentials: 'include'
     });
+
+    console.log('Create link response:', response);
 
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to create link');
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log('Created link:', data);
+    return data;
   } catch (error) {
     console.error('Create link error:', error);
     throw error;
@@ -85,24 +84,34 @@ export const createLink = async (linkData: CreateLinkData) => {
 };
 
 export const getUserLinks = async () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-
-  const response = await fetch(`${API_URL}/links`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
     }
-  });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to fetch links');
+    const response = await fetch(`${API_URL}/api/links`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    });
+
+    console.log('Get links response:', response);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to fetch links');
+    }
+
+    const data = await response.json();
+    console.log('Fetched links:', data);
+    return data;
+  } catch (error) {
+    console.error('Get links error:', error);
+    throw error;
   }
-
-  return response.json();
 };
 
 export const updateLink = async (id: number, linkData: UpdateLinkData) => {
@@ -132,12 +141,13 @@ export const updateLink = async (id: number, linkData: UpdateLinkData) => {
 export const deleteLink = async (id: number) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/links/${id}`, {
+    const response = await fetch(`${API_URL}/api/links/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include'
     });
 
     const data = await response.json();

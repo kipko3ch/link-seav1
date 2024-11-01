@@ -32,17 +32,28 @@ const createLink = async (req, res) => {
       return res.status(400).json({ message: 'Title, URL, and type are required' });
     }
 
+    // Add http:// if no protocol is specified
+    const formattedUrl = url.startsWith('http') ? url : `https://${url}`;
+
     const newLink = await sql`
       INSERT INTO links (user_id, title, url, description, type, click_count)
-      VALUES (${userId}, ${title}, ${url}, ${description || ''}, ${type}, 0)
+      VALUES (${userId}, ${title}, ${formattedUrl}, ${description || ''}, ${type}, 0)
       RETURNING id, user_id, title, url, description, type, click_count, created_at
     `;
     
     console.log('Created link:', newLink[0]);
-    res.status(201).json({ link: newLink[0] });
+    res.status(201).json({ 
+      success: true,
+      message: 'Link created successfully',
+      link: newLink[0] 
+    });
   } catch (error) {
     console.error('Error creating link:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to create link',
+      error: error.message 
+    });
   }
 };
 

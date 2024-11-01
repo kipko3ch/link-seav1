@@ -13,13 +13,12 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: [
-    'https://linksea.vercel.app',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://linksea.vercel.app'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  maxAge: 86400
+  credentials: true
 }));
 
 app.use(express.json());

@@ -41,9 +41,15 @@ export default function Login() {
         localStorage.setItem('token', response.token);
         localStorage.setItem('username', response.user.username);
         
-        // Force a hard redirect
-        console.log('Redirecting to dashboard...');
-        window.location.replace('/dashboard');
+        // Get the base URL for the current environment
+        const baseUrl = window.location.origin;
+        
+        // Force a hard redirect with full URL
+        console.log('Redirecting to:', `${baseUrl}/dashboard`);
+        window.location.href = `${baseUrl}/dashboard`;
+        
+        // Prevent any further code execution
+        return;
       } else {
         throw new Error('Invalid login response');
       }
