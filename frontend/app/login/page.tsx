@@ -41,6 +41,7 @@ export default function Login() {
         localStorage.setItem('username', response.user.username);
         
         window.location.href = '/dashboard';
+        return;
       } else {
         throw new Error('Invalid login response');
       }

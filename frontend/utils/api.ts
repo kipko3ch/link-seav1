@@ -20,14 +20,15 @@ export const loginUser = async (email: string, password: string) => {
     console.log('Response status:', response.status);
     
     const data = await response.json();
+    console.log('Login response data:', data);
     
     if (!response.ok) {
       throw new Error(data.message || 'Login failed');
     }
 
-    // Store token and username immediately after successful login
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('username', data.user.username);
+    if (!data.token || !data.user.username) {
+      throw new Error('Invalid login response from server');
+    }
 
     return data;
   } catch (error) {
