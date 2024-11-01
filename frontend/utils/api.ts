@@ -19,12 +19,16 @@ export const loginUser = async (email: string, password: string) => {
 
     console.log('Response status:', response.status);
     
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
+      throw new Error(data.message || 'Login failed');
     }
 
-    const data = await response.json();
+    // Store token and username immediately after successful login
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('username', data.user.username);
+
     return data;
   } catch (error) {
     console.error('Login error:', error);

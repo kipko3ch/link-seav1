@@ -34,15 +34,16 @@ export default function Login() {
     try {
       console.log('Attempting login with:', formData.email);
       const response = await loginUser(formData.email, formData.password);
-      console.log('Login successful:', response);
+      console.log('Login response:', response);
       
-      if (!localStorage.getItem('token') || !localStorage.getItem('username')) {
+      if (response.token && response.user.username) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('username', response.user.username);
+        
+        window.location.href = '/dashboard';
+      } else {
+        throw new Error('Invalid login response');
       }
-
-      router.push('/dashboard');
-      router.refresh();
     } catch (err) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Failed to login. Please try again.');
