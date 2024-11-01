@@ -6,10 +6,10 @@ services:
     startCommand: node index.js
     envVars:
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://linkseadb_owner:yMY7Rht4CTKe@ep-young-snow-a567v3yt.us-east-2.aws.neon.tech/linkseadb?sslmode=require
       - key: JWT_SECRET
-        sync: false
+        value: your_jwt_secret
       - key: EMAIL_USER
-        sync: false
+        value: dimenzuri@gmail.com
       - key: EMAIL_PASSWORD
-        sync: false 
+        value: hqbcxtstwpezdaea 

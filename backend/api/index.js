@@ -21,17 +21,23 @@ app.use(cors({
 
 app.use(express.json());
 
-// API routes
+// Test route
+app.get('/api', (req, res) => {
+  res.json({ message: 'Link Sea API is running' });
+});
+
+// API routes with explicit /api prefix
 app.use('/api/auth', authRoutes);
 app.use('/api/links', linkRoutes);
 app.use('/api/themes', themeRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/clicks', clickRoutes);
 
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Link Sea API is running' });
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something broke!', error: err.message });
 });
 
-// Export for serverless use
+// Export as serverless function
 module.exports = app; 
