@@ -2,13 +2,14 @@ import type { CreateLinkData, UpdateLinkData } from '@/types/link';
 import type { CreateThemeData, UpdateThemeData } from '@/types/theme';
 import type { LinkStats } from '@/types/analytics';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://link-sea.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://link-sea.onrender.com';
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    console.log('Making login request to:', `${API_URL}/auth/login`);
+    const apiEndpoint = `${API_URL}/api/auth/login`;
+    console.log('Making login request to:', apiEndpoint);
     
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,23 +17,14 @@ export const loginUser = async (email: string, password: string) => {
       body: JSON.stringify({ email, password }),
     });
 
-    console.log('Login response status:', response.status);
+    console.log('Response status:', response.status);
     
-    const text = await response.text();
-    console.log('Response text:', text);
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      console.error('Failed to parse response as JSON:', e);
-      throw new Error('Invalid server response');
-    }
-
     if (!response.ok) {
-      throw new Error(data.message || 'Login failed');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Login failed');
     }
 
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Login error:', error);
