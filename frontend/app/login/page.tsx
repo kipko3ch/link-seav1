@@ -37,11 +37,13 @@ export default function Login() {
       console.log('Login response:', response);
       
       if (response.token && response.user.username) {
+        // Store credentials
         localStorage.setItem('token', response.token);
         localStorage.setItem('username', response.user.username);
         
-        window.location.replace('/dashboard');
-        return;
+        // Use window.location.href with full URL
+        const baseUrl = window.location.origin;
+        window.location.href = `${baseUrl}/dashboard`;
       } else {
         throw new Error('Invalid login response');
       }
