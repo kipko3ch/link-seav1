@@ -2,11 +2,11 @@ import type { CreateLinkData, UpdateLinkData } from '@/types/link';
 import type { CreateThemeData, UpdateThemeData } from '@/types/theme';
 import type { LinkStats } from '@/types/analytics';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://your-backend-url.onrender.com';
 
 export const loginUser = async (email: string, password: string) => {
   try {
-    const apiEndpoint = `${API_URL}/api/auth/login`;
+    const apiEndpoint = `${BASE_URL}/api/auth/login`;
     console.log('Making login request to:', apiEndpoint);
     
     const response = await fetch(apiEndpoint, {
@@ -15,7 +15,8 @@ export const loginUser = async (email: string, password: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-      credentials: 'include'
+      credentials: 'include',
+      mode: 'cors',
     });
 
     if (!response.ok) {
@@ -24,7 +25,11 @@ export const loginUser = async (email: string, password: string) => {
     }
 
     const data = await response.json();
-    console.log('Login response:', data);
+    
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
+    
     return data;
   } catch (error) {
     console.error('Login error:', error);
@@ -34,7 +39,7 @@ export const loginUser = async (email: string, password: string) => {
 
 export const registerUser = async (username: string, email: string, password: string) => {
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,7 +62,7 @@ export const registerUser = async (username: string, email: string, password: st
 export const createLink = async (linkData: CreateLinkData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/api/links`, {
+    const response = await fetch(`${BASE_URL}/api/links`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +95,7 @@ export const getUserLinks = async () => {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_URL}/api/links`, {
+    const response = await fetch(`${BASE_URL}/api/links`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -117,7 +122,7 @@ export const getUserLinks = async () => {
 export const updateLink = async (id: number, linkData: UpdateLinkData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/links/${id}`, {
+    const response = await fetch(`${BASE_URL}/links/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -141,7 +146,7 @@ export const updateLink = async (id: number, linkData: UpdateLinkData) => {
 export const deleteLink = async (id: number) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/api/links/${id}`, {
+    const response = await fetch(`${BASE_URL}/api/links/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -171,7 +176,7 @@ export const deleteLink = async (id: number) => {
 export const getThemes = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/themes`, {
+    const response = await fetch(`${BASE_URL}/themes`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -192,7 +197,7 @@ export const getThemes = async () => {
 export const getActiveTheme = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/themes/active`, {
+    const response = await fetch(`${BASE_URL}/themes/active`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -213,7 +218,7 @@ export const getActiveTheme = async () => {
 export const createTheme = async (themeData: CreateThemeData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/themes`, {
+    const response = await fetch(`${BASE_URL}/themes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -237,7 +242,7 @@ export const createTheme = async (themeData: CreateThemeData) => {
 export const updateTheme = async (id: number, themeData: UpdateThemeData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/themes/${id}`, {
+    const response = await fetch(`${BASE_URL}/themes/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -261,7 +266,7 @@ export const updateTheme = async (id: number, themeData: UpdateThemeData) => {
 export const deleteTheme = async (id: number) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/themes/${id}`, {
+    const response = await fetch(`${BASE_URL}/themes/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -282,7 +287,7 @@ export const deleteTheme = async (id: number) => {
 
 export const getPublicPage = async (username: string) => {
   try {
-    const response = await fetch(`${API_URL}/public/${username}`);
+    const response = await fetch(`${BASE_URL}/public/${username}`);
 
     if (!response.ok) {
       const error = await response.json();
@@ -299,7 +304,7 @@ export const getPublicPage = async (username: string) => {
 export const trackClick = async (linkId: number) => {
   try {
     const referrer = document.referrer;
-    const response = await fetch(`${API_URL}/clicks/${linkId}`, {
+    const response = await fetch(`${BASE_URL}/clicks/${linkId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -319,7 +324,7 @@ export const trackClick = async (linkId: number) => {
 export const getLinkStats = async (linkId: number): Promise<{ stats: LinkStats }> => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/clicks/${linkId}/stats`, {
+    const response = await fetch(`${BASE_URL}/clicks/${linkId}/stats`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -339,7 +344,7 @@ export const getLinkStats = async (linkId: number): Promise<{ stats: LinkStats }
 
 export const requestPasswordReset = async (email: string) => {
   try {
-    const response = await fetch(`${API_URL}/auth/forgot-password`, {
+    const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -361,7 +366,7 @@ export const requestPasswordReset = async (email: string) => {
 
 export const resetPassword = async (email: string, otp: string, newPassword: string) => {
   try {
-    const response = await fetch(`${API_URL}/auth/reset-password`, {
+    const response = await fetch(`${BASE_URL}/auth/reset-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -386,7 +391,7 @@ export const updateProfile = async (data: { username?: string; bio?: string }) =
     const token = localStorage.getItem('token');
     console.log('Updating profile with:', data); // Debug log
 
-    const response = await fetch(`${API_URL}/auth/profile`, {
+    const response = await fetch(`${BASE_URL}/auth/profile`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -410,7 +415,7 @@ export const updateProfile = async (data: { username?: string; bio?: string }) =
 export const updatePassword = async (currentPassword: string, newPassword: string) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/auth/password`, {
+    const response = await fetch(`${BASE_URL}/auth/password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -434,7 +439,7 @@ export const updatePassword = async (currentPassword: string, newPassword: strin
 export const getUserProfile = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/auth/profile`, {
+    const response = await fetch(`${BASE_URL}/auth/profile`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -455,7 +460,7 @@ export const getUserProfile = async () => {
 export const cleanupOrphanedLinks = async () => {
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/links/cleanup`, {
+    const response = await fetch(`${BASE_URL}/links/cleanup`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

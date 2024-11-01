@@ -28,34 +28,21 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
-
+    setError('');
+    
     try {
-      console.log('Attempting login with:', formData.email);
       const response = await loginUser(formData.email, formData.password);
       console.log('Login response:', response);
       
-      if (response.token && response.user.username) {
-        // Store credentials
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('username', response.user.username);
-        
-        // Get the base URL for the current environment
-        const baseUrl = window.location.origin;
-        
-        // Force a hard redirect with full URL
-        console.log('Redirecting to:', `${baseUrl}/dashboard`);
-        window.location.href = `${baseUrl}/dashboard`;
-        
-        // Prevent any further code execution
-        return;
+      if (response.success) {
+        window.location.href = '/dashboard';
       } else {
-        throw new Error('Invalid login response');
+        setError(response.message || 'Login failed');
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to login. Please try again.');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to login. Please try again.');
     } finally {
       setIsLoading(false);
     }
