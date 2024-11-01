@@ -2,7 +2,7 @@ import type { CreateLinkData, UpdateLinkData } from '@/types/link';
 import type { CreateThemeData, UpdateThemeData } from '@/types/theme';
 import type { LinkStats } from '@/types/analytics';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const loginUser = async (email: string, password: string) => {
   try {
