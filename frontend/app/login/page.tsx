@@ -25,6 +25,7 @@ export default function Login() {
   const [resetLoading, setResetLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +37,10 @@ export default function Login() {
       console.log('Login response:', response);
       
       if (response.success) {
-        window.location.href = '/dashboard';
+        setIsRedirecting(true);
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
       } else {
         setError(response.message || 'Login failed');
       }
@@ -44,7 +48,9 @@ export default function Login() {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'Failed to login. Please try again.');
     } finally {
-      setIsLoading(false);
+      if (!isRedirecting) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -73,7 +79,6 @@ export default function Login() {
       const response = await resetPassword(resetEmail, resetOTP, newPassword);
       setSuccessMessage('Password reset successful');
       setShowResetModal(false);
-      // Reset all states
       setResetEmail('');
       setResetOTP('');
       setNewPassword('');
@@ -209,8 +214,21 @@ export default function Login() {
     </div>
   );
 
+  const LoadingOverlay = () => (
+    <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="text-center">
+        <Loader2 className="animate-spin h-12 w-12 text-blue-400 mx-auto mb-4" />
+        <p className="text-xl text-blue-400">
+          {isRedirecting ? 'Redirecting to dashboard...' : 'Logging in...'}
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      {(isLoading || isRedirecting) && <LoadingOverlay />}
+      
       <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
       
       <div className="container mx-auto min-h-screen flex flex-col items-center justify-center px-4">
