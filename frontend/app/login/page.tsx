@@ -40,9 +40,8 @@ export default function Login() {
         localStorage.setItem('token', response.token);
         localStorage.setItem('username', response.user.username);
         
-        setTimeout(() => {
-          window.location.href = `${window.location.origin}/dashboard`;
-        }, 100);
+        window.location.replace('/dashboard');
+        return;
       } else {
         throw new Error('Invalid login response');
       }

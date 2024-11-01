@@ -15,7 +15,7 @@ export const loginUser = async (email: string, password: string) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-      credentials: 'include'
+      cache: 'no-store'
     });
 
     console.log('Response status:', response.status);
