@@ -6,6 +6,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://link-sea.onrender.co
 
 export const loginUser = async (email: string, password: string) => {
   try {
+    console.log('Making login request to:', `${API_URL}/auth/login`);
+    
     const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -14,12 +16,24 @@ export const loginUser = async (email: string, password: string) => {
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
+    console.log('Login response status:', response.status);
+    
+    const text = await response.text();
+    console.log('Response text:', text);
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error('Failed to parse response as JSON:', e);
+      throw new Error('Invalid server response');
     }
 
-    return response.json();
+    if (!response.ok) {
+      throw new Error(data.message || 'Login failed');
+    }
+
+    return data;
   } catch (error) {
     console.error('Login error:', error);
     throw error;
